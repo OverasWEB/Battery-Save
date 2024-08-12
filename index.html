@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin: 10px 0 20px 0;
+        }
+
+        input[type="number"],
+        button {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input[type="number"] {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: teal;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00796b;
+        }
+
+        .diagram-container {
+            height: 200px;
+            margin-top: 30px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 5px;
+            background-color: whitesmoke;
+            border-radius: 10px;
+        }
+
+        .diagram-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .diagram {
+            height: 180px;
+            display: inline-flex;
+            align-items: flex-end;
+            position: relative;
+        }
+
+        .bar {
+            width: 22.5px;
+            color: white;
+            text-align: center;
+            font-size: 1.5vh;
+            line-height: 22.5px;
+            border-radius: 4px 4px 0 0;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: fadeInRight 0.5s ease forwards;
+            position: relative;
+            transition: background-color 0.3s ease; /* Efek hover */
+        }
+
+        .bar:hover {
+            background-color: #555; /* Warna latar belakang saat hover */
+        }
+
+        /* color */
+        .bar:nth-child(7n+1) {
+            background-color: teal;
+        }
+
+        .bar:nth-child(7n+2) {
+            background-color: orangered;
+        }
+
+        .bar:nth-child(7n+3) {
+            background-color: slateblue;
+        }
+
+        .bar:nth-child(7n+4) {
+            background-color: darkseagreen;
+        }
+
+        .bar:nth-child(7n+5) {
+            background-color: darkturquoise;
+        }
+
+        .bar:nth-child(7n+6) {
+            background-color: gold;
+        }
+
+        .bar:nth-child(7n+7) {
+            background-color: magenta;
+        }
+
+        .number-labels {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 5px;
+            font-size: 10px;
+            color: black;
+        }
+
+        .number-label {
+            width: 22.5px;
+            max-width: 22.5px;
+            min-width: 22.5px;
+            text-align: center;
+        }
+
+        @keyframes fadeInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Diagram Calisthenic</h2>
+        <input id="inputNumber" type="number" min="1" max="100" placeholder="Masukkan angka 1-100">
+        <button onclick="addToDiagram()">Kirim</button>
+        <div id="diagram-container" class="diagram-container">
+            <div id="diagram" class="diagram"></div>
+            <div id="numberLabels" class="number-labels"></div>
+        </div>
+    </div>
+
+    <script>
+        let counter = 1;
+
+        function addToDiagram() {
+            let inputNumber = document.getElementById('inputNumber').value;
+
+            // Menghilangkan angka nol di depan
+            inputNumber = parseInt(inputNumber, 10); // Mengubah string menjadi integer
+
+            if (inputNumber >= 1 && inputNumber <= 100) {
+                const diagram = document.getElementById('diagram');
+                const numberLabels = document.getElementById('numberLabels');
+
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (inputNumber * 1.7) + 'px';
+                bar.textContent = inputNumber;
+                bar.dataset.number = inputNumber; // Menyimpan angka pada data atribut
+                
+                // Menambahkan event listener untuk menghapus bar saat ditekan lama
+                bar.addEventListener('mousedown', function (event) {
+                    if (event.which === 1) { // Hanya untuk klik kiri
+                        bar.classList.add('pressed'); // Menambahkan kelas pressed saat ditekan
+                        const start = Date.now();
+                        const check = setInterval(() => {
+                            if (Date.now() - start >= 700) { // 1 detik
+                                clearInterval(check);
+                                if (confirm('Apakah Anda ingin menghapus bar ini?')) {
+                                    // Menghapus label nomor terkait
+                                    const labels = Array.from(numberLabels.childNodes);
+                                    labels.forEach(label => {
+                                        if (label.dataset.number == bar.dataset.number) {
+                                            label.remove();
+                                        }
+                                    });
+
+                                    bar.remove();
+                                }
+                            }
+                        }, 100);
+                        document.addEventListener('mouseup', () => {
+                            bar.classList.remove('pressed');
+                            clearInterval(check);
+                        }, { once: true });
+                    }
+                });
+
+                diagram.appendChild(bar);
+
+                const numberLabel = document.createElement('div');
+                numberLabel.className = 'number-label';
+                numberLabel.textContent = counter++;
+                numberLabel.dataset.number = inputNumber; // Menyimpan angka pada data atribut
+                numberLabels.appendChild(numberLabel);
+
+                const container = document.querySelector('.diagram-container');
+                setTimeout(() => {
+                    const barRect = bar.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    const offset = barRect.right - containerRect.right + 50;
+                    container.scrollLeft += offset;
+                }, 10);
+
+                document.getElementById('inputNumber').value = '';
+            } else if (inputNumber > 100) {
+                alert('Masukkan angka antara 1 dan 100');
+                document.getElementById('inputNumber').value = '';
+            }
+        }
+    </script>
+</body>
+
+</html>
