@@ -1,239 +1,264 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagram</title>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#000000">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <title>Status Baterai</title>
+    <!-- css -->
     <style>
-        * {
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #c579f4, #8b43e4);
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
+        .battery-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 500px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            margin: 10px 0 20px 0;
-        }
-
-        input[type="number"],
-        button {
-            box-sizing: border-box;
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        input[type="number"] {
-            margin-bottom: 10px;
-        }
-
-        button {
-            background-color: teal;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #00796b;
-        }
-
-        .diagram-container {
-            height: 200px;
-            margin-top: 30px;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 5px;
-            background-color: whitesmoke;
-            border-radius: 10px;
-        }
-
-        .diagram-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .diagram {
-            height: 180px;
-            display: inline-flex;
-            align-items: flex-end;
-            position: relative;
-        }
-
-        .bar {
-            width: 22.5px;
-            color: white;
+            width: 80%;
             text-align: center;
-            font-size: 1.5vh;
-            line-height: 22.5px;
-            border-radius: 4px 4px 0 0;
-            opacity: 0;
-            transform: translateX(-20px);
-            animation: fadeInRight 0.5s ease forwards;
+            background: linear-gradient(-25deg, #bd6eed, #d0baea);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+        }
+
+        .battery-level {
+            width: 100%;
+            height: 50px;
+            border: 2px solid #333;
+            border-radius: 8px;
             position: relative;
-            transition: background-color 0.3s ease; /* Efek hover */
+            background-color: whitesmoke;
+            margin-bottom: 10px;
+            overflow: hidden;
         }
 
-        .bar:hover {
-            background-color: #555; /* Warna latar belakang saat hover */
+        .battery-fill {
+            height: 100%;
+            background-color: #4caf50;
+            border-radius: 5px 2px 2px 5px;
+            transition: width 0.5s;
         }
 
-        /* color */
-        .bar:nth-child(7n+1) {
-            background-color: teal;
+        .battery-fill.charging {
+            background-color: #2196F3;
         }
 
-        .bar:nth-child(7n+2) {
-            background-color: orangered;
+        .battery-level::before {
+            content: '';
+            position: absolute;
+            top: 12.5%;
+            right: -12px;
+            width: 12px;
+            height: 75%;
+            background-color: #333;
+            border-radius: 4px;
         }
 
-        .bar:nth-child(7n+3) {
-            background-color: slateblue;
-        }
-
-        .bar:nth-child(7n+4) {
-            background-color: darkseagreen;
-        }
-
-        .bar:nth-child(7n+5) {
-            background-color: darkturquoise;
-        }
-
-        .bar:nth-child(7n+6) {
-            background-color: gold;
-        }
-
-        .bar:nth-child(7n+7) {
-            background-color: magenta;
-        }
-
-        .number-labels {
+        .controls {
             display: flex;
-            justify-content: flex-start;
-            margin-top: 5px;
-            font-size: 10px;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        button,
+        input[type="file"],
+        input[type="number"] {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: gold;
+            box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.3);
             color: black;
         }
 
-        .number-label {
-            width: 22.5px;
-            max-width: 22.5px;
-            min-width: 22.5px;
-            text-align: center;
+        button {
+            margin-top: 20px;
+            background-color: gold;
         }
 
-        @keyframes fadeInRight {
-            to {
-                opacity: 1;
-                transform: translateX(0);
+        input[type="number"] {
+            width: calc(100% - 20px);
+            background-color: gold;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="file"] {
+            width: calc(100% - 20px);
+        }
+
+        p {
+            color: white;
+            padding: 1px 15px;
+            background-color: darkcyan;
+            border-radius: 100px;
+            font-size: 80%;
+            z-index: 10;
+        }
+
+        .image {
+            width: 50%;
+            height: 50%;
+            overflow: hidden;
+            border: 2px solid black;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0%;
+            z-index: 1;
+            animation: profile 2s infinite ease-in-out;
+        }
+
+        @keyframes profile {
+            0% {
+                transform: rotate(-20deg);
             }
+
+            50% {
+                transform: rotate(20deg);
+            }
+
+            100% {
+                transform: rotate(-20deg);
+            }
+        }
+
+        .image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .shadow {
+            transform: scale(0.4);
+            position: absolute;
+            top: 28%;
+            width: 90%;
+            height: 10%;
+            background: rgb(0, 0, 0);
+            border-radius: 50%;
+            opacity: 0.7;
+            filter: blur(10px);
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h2>Diagram Calisthenic</h2>
-        <input id="inputNumber" type="number" min="1" max="100" placeholder="Masukkan angka 1-100">
-        <button onclick="addToDiagram()">Kirim</button>
-        <div id="diagram-container" class="diagram-container">
-            <div id="diagram" class="diagram"></div>
-            <div id="numberLabels" class="number-labels"></div>
+    <div class="battery-container">
+        <div class="image">
+            <img src="bat.jpeg" alt="Gambar contoh">
         </div>
+        <div class="shadow"></div>
+        <p id="battery-status"></p>
+        <div id="battery-level" class="battery-level">
+            <div id="battery-fill" class="battery-fill"></div>
+        </div>
+        <div class="controls">
+            <input type="file" id="file-input" accept="audio/*">
+            <button id="remove-sound">Hapus Suara</button>
+            <input type="number" id="alarm-threshold" min="30" max="100" value="95" step="1">
+        </div>
+
+        <z style="position: relative; left: 30%; margin: 10px; font-size: 10px;
+        opacity: 0.6; color: white; font-weight: bolder;">Battery Saving</z>
     </div>
 
+    <audio id="battery-alarm" src="gon.mp3" preload="auto"></audio>
+
+
+    <!-- javascript -->
     <script>
-        let counter = 1;
+        const alarm = document.getElementById('battery-alarm');
+        const fileInput = document.getElementById('file-input');
+        const removeSoundButton = document.getElementById('remove-sound');
+        const alarmThresholdInput = document.getElementById('alarm-threshold');
 
-        function addToDiagram() {
-            let inputNumber = document.getElementById('inputNumber').value;
+        function updateBatteryStatus(level) {
+            const batteryFillElement = document.getElementById('battery-fill');
+            const batteryStatusElement = document.getElementById('battery-status');
+            const threshold = parseFloat(alarmThresholdInput.value);
 
-            // Menghilangkan angka nol di depan
-            inputNumber = parseInt(inputNumber, 10); // Mengubah string menjadi integer
+            const batteryLevel = Math.round(level * 100);
 
-            if (inputNumber >= 1 && inputNumber <= 100) {
-                const diagram = document.getElementById('diagram');
-                const numberLabels = document.getElementById('numberLabels');
+            batteryFillElement.style.width = level * 100 + '%';
+            batteryFillElement.style.backgroundColor = level > 0.2 ? '#4caf50' : '#f44336';
 
-                const bar = document.createElement('div');
-                bar.className = 'bar';
-                bar.style.height = (inputNumber * 1.7) + 'px';
-                bar.textContent = inputNumber;
-                bar.dataset.number = inputNumber; // Menyimpan angka pada data atribut
-                
-                // Menambahkan event listener untuk menghapus bar saat ditekan lama
-                bar.addEventListener('mousedown', function (event) {
-                    if (event.which === 1) { // Hanya untuk klik kiri
-                        bar.classList.add('pressed'); // Menambahkan kelas pressed saat ditekan
-                        const start = Date.now();
-                        const check = setInterval(() => {
-                            if (Date.now() - start >= 700) { // 1 detik
-                                clearInterval(check);
-                                if (confirm('Apakah Anda ingin menghapus bar ini?')) {
-                                    // Menghapus label nomor terkait
-                                    const labels = Array.from(numberLabels.childNodes);
-                                    labels.forEach(label => {
-                                        if (label.dataset.number == bar.dataset.number) {
-                                            label.remove();
-                                        }
-                                    });
+            batteryStatusElement.textContent = `Baterai tersisa: ${batteryLevel}%`;
 
-                                    bar.remove();
-                                }
-                            }
-                        }, 100);
-                        document.addEventListener('mouseup', () => {
-                            bar.classList.remove('pressed');
-                            clearInterval(check);
-                        }, { once: true });
+            if (batteryLevel >= threshold) {
+                alarm.play();
+            }
+        }
+
+        fileInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileURL = URL.createObjectURL(file);
+                alarm.src = fileURL;
+            } else {
+                alarm.src = 'gon.mp3';
+            }
+        });
+
+        removeSoundButton.addEventListener('click', function () {
+            fileInput.value = '';
+            alarm.src = 'gon.mp3';
+        });
+
+        alarmThresholdInput.addEventListener('input', function () {
+            const value = parseFloat(alarmThresholdInput.value);
+            if (value > 100) {
+                function getRandomInt(min, max) {
+                    return Math.floor(Math.random() * (max - min + 1)) + min;
+                }
+                alarmThresholdInput.value = getRandomInt(60, 80);
+                alert("Masukkan nilai baterai yang sesuai");
+            }
+        });
+
+        navigator.getBattery().then(function (battery) {
+            function updateBatteryInfo() {
+                updateBatteryStatus(battery.level);
+
+                const batteryFillElement = document.getElementById('battery-fill');
+                if (battery.charging) {
+                    batteryFillElement.classList.add('charging');
+                } else {
+                    batteryFillElement.classList.remove('charging');
+                }
+
+                battery.addEventListener('chargingchange', function () {
+                    if (battery.charging) {
+                        batteryFillElement.classList.add('charging');
+                    } else {
+                        batteryFillElement.classList.remove('charging');
                     }
                 });
 
-                diagram.appendChild(bar);
-
-                const numberLabel = document.createElement('div');
-                numberLabel.className = 'number-label';
-                numberLabel.textContent = counter++;
-                numberLabel.dataset.number = inputNumber; // Menyimpan angka pada data atribut
-                numberLabels.appendChild(numberLabel);
-
-                const container = document.querySelector('.diagram-container');
-                setTimeout(() => {
-                    const barRect = bar.getBoundingClientRect();
-                    const containerRect = container.getBoundingClientRect();
-                    const offset = barRect.right - containerRect.right + 50;
-                    container.scrollLeft += offset;
-                }, 10);
-
-                document.getElementById('inputNumber').value = '';
-            } else if (inputNumber > 100) {
-                alert('Masukkan angka antara 1 dan 100');
-                document.getElementById('inputNumber').value = '';
+                battery.addEventListener('levelchange', function () {
+                    updateBatteryStatus(battery.level);
+                });
             }
-        }
+            updateBatteryInfo();
+        });
     </script>
 </body>
 
